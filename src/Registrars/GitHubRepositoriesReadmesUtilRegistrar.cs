@@ -15,8 +15,8 @@ public static class GitHubRepositoriesReadmesUtilRegistrar
     /// </summary>
     public static IServiceCollection AddGitHubRepositoriesReadmesUtilAsSingleton(this IServiceCollection services)
     {
-        services.AddGitHubClientUtilAsSingleton();
-        services.TryAddSingleton<IGitHubRepositoriesReadmesUtil, GitHubRepositoriesReadmesUtil>();
+        services.AddGitHubClientUtilAsSingleton()
+                .TryAddSingleton<IGitHubRepositoriesReadmesUtil, GitHubRepositoriesReadmesUtil>();
 
         return services;
     }
@@ -26,8 +26,8 @@ public static class GitHubRepositoriesReadmesUtilRegistrar
     /// </summary>
     public static IServiceCollection AddGitHubRepositoriesReadmesUtilAsScoped(this IServiceCollection services)
     {
-        services.AddGitHubClientUtilAsSingleton();
-        services.TryAddScoped<IGitHubRepositoriesReadmesUtil, GitHubRepositoriesReadmesUtil>();
+        services.AddGitHubClientUtilAsSingleton()
+                .TryAddScoped<IGitHubRepositoriesReadmesUtil, GitHubRepositoriesReadmesUtil>();
 
         return services;
     }
