@@ -1,4 +1,4 @@
-# Contributing to Soenneker.GitHub.Repositories.Readmes
+﻿# Contributing to Soenneker.GitHub.Repositories.Readmes
 
 We're excited that you're interested in contributing!
 
