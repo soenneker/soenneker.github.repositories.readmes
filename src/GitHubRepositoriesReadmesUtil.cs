@@ -1,40 +1,68 @@
 using Microsoft.Extensions.Logging;
-using Octokit;
-using Soenneker.GitHub.Client.Abstract;
-using Soenneker.GitHub.Repositories.Readmes.Abstract;
-using System.Threading.Tasks;
-using System.Threading;
 using Soenneker.Extensions.Task;
 using Soenneker.Extensions.ValueTask;
+using Soenneker.GitHub.ClientUtil.Abstract;
+using Soenneker.GitHub.OpenApiClient.Repos.Item.Item.Contents.Item;
+using Soenneker.GitHub.Repositories.Readmes.Abstract;
+using System;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Soenneker.GitHub.OpenApiClient;
 
 namespace Soenneker.GitHub.Repositories.Readmes;
 
-/// <inheritdoc cref="IGitHubRepositoriesReadmesUtil"/>
-public class GitHubRepositoriesReadmesUtil : IGitHubRepositoriesReadmesUtil
+///<inheritdoc cref="IGitHubRepositoriesReadmesUtil"/>
+public sealed class GitHubRepositoriesReadmesUtil : IGitHubRepositoriesReadmesUtil
 {
     private readonly ILogger<GitHubRepositoriesReadmesUtil> _logger;
-    private readonly IGitHubClientUtil _gitHubClientUtil;
+    private readonly IGitHubOpenApiClientUtil _gitHubOpenApiClientUtil;
 
-    public GitHubRepositoriesReadmesUtil(ILogger<GitHubRepositoriesReadmesUtil> logger, IGitHubClientUtil gitHubClientUtil)
+    public GitHubRepositoriesReadmesUtil(ILogger<GitHubRepositoriesReadmesUtil> logger, IGitHubOpenApiClientUtil gitHubOpenApiClientUtil)
     {
         _logger = logger;
-        _gitHubClientUtil = gitHubClientUtil;
+        _gitHubOpenApiClientUtil = gitHubOpenApiClientUtil;
     }
 
     public async ValueTask Create(string owner, string name, string commitMessage, string content, string branch = "main", CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Creating README.md for GitHub repository ({owner}/{name})...", owner, name);
 
-        await (await _gitHubClientUtil.Get(cancellationToken).NoSync()).Repository.Content.CreateFile(owner, name, "README.md",
-            new CreateFileRequest(commitMessage, content, branch)).NoSync();
+        GitHubOpenApiClient client = await _gitHubOpenApiClientUtil.Get(cancellationToken).NoSync();
+
+        var requestBody = new WithPathPutRequestBody
+        {
+            Message = commitMessage,
+            Content = Convert.ToBase64String(Encoding.UTF8.GetBytes(content)),
+            Branch = branch
+        };
+
+        await client.Repos[owner][name].Contents["README.md"].PutAsync(requestBody, cancellationToken: cancellationToken).NoSync();
     }
 
     public async ValueTask Update(string owner, string name, string commitMessage, string content, string branch = "main", CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Updating README.md for GitHub repository ({owner}/{name})...", owner, name);
 
-        await (await _gitHubClientUtil.Get(cancellationToken).NoSync()).Repository.Content.UpdateFile(owner, name, "README.md",
-            new UpdateFileRequest(commitMessage, content, branch)).NoSync();
+        GitHubOpenApiClient client = await _gitHubOpenApiClientUtil.Get(cancellationToken).NoSync();
+
+        // Get the current file to get its SHA
+        WithPathItemRequestBuilder.WithPathGetResponse? response = await client.Repos[owner][name].Contents["README.md"].GetAsWithPathGetResponseAsync(cancellationToken: cancellationToken).NoSync();
+
+        if (response?.ContentFile == null)
+        {
+            throw new Exception($"README.md not found in repository {owner}/{name}");
+        }
+
+        var requestBody = new WithPathPutRequestBody
+        {
+            Message = commitMessage,
+            Content = Convert.ToBase64String(Encoding.UTF8.GetBytes(content)),
+            Branch = branch,
+            Sha = response.ContentFile.Sha
+        };
+
+        await client.Repos[owner][name].Contents["README.md"].PutAsync(requestBody, cancellationToken: cancellationToken);
     }
 
     public async ValueTask Upsert(string owner, string name, string commitMessage, string content, string branch = "main", CancellationToken cancellationToken = default)
@@ -45,10 +73,9 @@ public class GitHubRepositoriesReadmesUtil : IGitHubRepositoriesReadmesUtil
         {
             await Update(owner, name, commitMessage, content, branch, cancellationToken).NoSync();
         }
-        catch (NotFoundException)
+        catch (Exception ex) when (ex.Message.Contains("not found"))
         {
-            _logger.BeginScope("Existing README.md was not found...");
-
+            _logger.LogInformation("Existing README.md was not found, creating new one...");
             await Create(owner, name, commitMessage, content, branch, cancellationToken).NoSync();
         }
     }

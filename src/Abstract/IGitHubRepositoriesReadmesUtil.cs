@@ -6,42 +6,44 @@ namespace Soenneker.GitHub.Repositories.Readmes.Abstract;
 /// <summary>
 /// A utility library for GitHub repository readme related operations
 /// </summary>
+/// <summary>
+/// Provides utilities for managing <c>README.md</c> files in GitHub repositories, including create, update, and upsert operations.
+/// </summary>
 public interface IGitHubRepositoriesReadmesUtil
 {
     /// <summary>
-    /// Creates a README.md file in the specified GitHub repository.
+    /// Creates a new <c>README.md</c> file in the specified GitHub repository.
     /// </summary>
-    /// <param name="owner">The owner of the repository where the README.md file will be created.</param>
-    /// <param name="name">The name of the repository where the README.md file will be created.</param>
-    /// <param name="commitMessage">The commit message for the file creation.</param>
-    /// <param name="content">The content to be placed in the README.md file.</param>
-    /// <param name="branch">The branch where the README.md file will be created.</param>
-    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-    /// <returns>A <see cref="ValueTask"/> representing the asynchronous operation.</returns>
+    /// <param name="owner">The owner of the repository (user or organization).</param>
+    /// <param name="name">The name of the repository.</param>
+    /// <param name="commitMessage">The commit message to associate with the creation.</param>
+    /// <param name="content">The markdown content of the README file.</param>
+    /// <param name="branch">The branch to commit the README to. Defaults to <c>main</c>.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     ValueTask Create(string owner, string name, string commitMessage, string content, string branch = "main", CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Updates the README.md file in the specified GitHub repository.
+    /// Updates an existing <c>README.md</c> file in the specified GitHub repository.
     /// </summary>
-    /// <param name="owner">The owner of the repository where the README.md file will be updated.</param>
-    /// <param name="name">The name of the repository where the README.md file will be updated.</param>
-    /// <param name="commitMessage">The commit message for the file update.</param>
-    /// <param name="content">The new content for the README.md file.</param>
-    /// <param name="branch">The branch where the README.md file will be updated.</param>
-    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-    /// <returns>A <see cref="ValueTask"/> representing the asynchronous operation.</returns>
+    /// <param name="owner">The owner of the repository (user or organization).</param>
+    /// <param name="name">The name of the repository.</param>
+    /// <param name="commitMessage">The commit message to associate with the update.</param>
+    /// <param name="content">The new markdown content of the README file.</param>
+    /// <param name="branch">The branch to commit the update to. Defaults to <c>main</c>.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     ValueTask Update(string owner, string name, string commitMessage, string content, string branch = "main", CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Upserts the README.md file in the specified GitHub repository.
-    /// If the file exists, it will be updated; otherwise, it will be created.
+    /// Updates the existing <c>README.md</c> file if it exists; otherwise, creates a new one.
     /// </summary>
-    /// <param name="owner">The owner of the repository where the README.md file will be upserted.</param>
-    /// <param name="name">The name of the repository where the README.md file will be upserted.</param>
-    /// <param name="commitMessage">The commit message for the file creation or update.</param>
-    /// <param name="content">The content to be placed in the README.md file.</param>
-    /// <param name="branch">The branch where the README.md file will be upserted.</param>
-    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-    /// <returns>A <see cref="ValueTask"/> representing the asynchronous operation.</returns>
+    /// <param name="owner">The owner of the repository (user or organization).</param>
+    /// <param name="name">The name of the repository.</param>
+    /// <param name="commitMessage">The commit message to associate with the operation.</param>
+    /// <param name="content">The markdown content of the README file.</param>
+    /// <param name="branch">The branch to commit the operation to. Defaults to <c>main</c>.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     ValueTask Upsert(string owner, string name, string commitMessage, string content, string branch = "main", CancellationToken cancellationToken = default);
 }

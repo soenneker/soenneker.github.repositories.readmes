@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Soenneker.GitHub.Client.Registrars;
+using Soenneker.GitHub.ClientUtil.Registrars;
 using Soenneker.GitHub.Repositories.Readmes.Abstract;
 
 namespace Soenneker.GitHub.Repositories.Readmes.Registrars;
@@ -15,8 +15,7 @@ public static class GitHubRepositoriesReadmesUtilRegistrar
     /// </summary>
     public static IServiceCollection AddGitHubRepositoriesReadmesUtilAsSingleton(this IServiceCollection services)
     {
-        services.AddGitHubClientUtilAsSingleton()
-                .TryAddSingleton<IGitHubRepositoriesReadmesUtil, GitHubRepositoriesReadmesUtil>();
+        services.AddGitHubOpenApiClientUtilAsSingleton().TryAddSingleton<IGitHubRepositoriesReadmesUtil, GitHubRepositoriesReadmesUtil>();
 
         return services;
     }
@@ -26,8 +25,7 @@ public static class GitHubRepositoriesReadmesUtilRegistrar
     /// </summary>
     public static IServiceCollection AddGitHubRepositoriesReadmesUtilAsScoped(this IServiceCollection services)
     {
-        services.AddGitHubClientUtilAsSingleton()
-                .TryAddScoped<IGitHubRepositoriesReadmesUtil, GitHubRepositoriesReadmesUtil>();
+        services.AddGitHubOpenApiClientUtilAsSingleton().TryAddScoped<IGitHubRepositoriesReadmesUtil, GitHubRepositoriesReadmesUtil>();
 
         return services;
     }
