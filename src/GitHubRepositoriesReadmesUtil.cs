@@ -47,7 +47,7 @@ public sealed class GitHubRepositoriesReadmesUtil : IGitHubRepositoriesReadmesUt
         GitHubOpenApiClient client = await _gitHubOpenApiClientUtil.Get(cancellationToken).NoSync();
 
         // Get the current file to get its SHA
-        WithPathItemRequestBuilder.WithPathGetResponse? response = await client.Repos[owner][name].Contents["README.md"].GetAsWithPathGetResponseAsync(cancellationToken: cancellationToken).NoSync();
+        WithPathItemRequestBuilder.WithPathGetResponse? response = await client.Repos[owner][name].Contents["README.md"].GetAsync(cancellationToken: cancellationToken).NoSync();
 
         if (response?.ContentFile == null)
         {
