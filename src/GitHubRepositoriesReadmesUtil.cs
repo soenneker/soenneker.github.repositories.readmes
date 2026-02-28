@@ -5,6 +5,7 @@ using Soenneker.GitHub.ClientUtil.Abstract;
 using Soenneker.GitHub.OpenApiClient.Repos.Item.Item.Contents.Item;
 using Soenneker.GitHub.Repositories.Readmes.Abstract;
 using System;
+using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -47,7 +48,7 @@ public sealed class GitHubRepositoriesReadmesUtil : IGitHubRepositoriesReadmesUt
         GitHubOpenApiClient client = await _gitHubOpenApiClientUtil.Get(cancellationToken).NoSync();
 
         // Get the current file to get its SHA
-        WithPathItemRequestBuilder.WithPathGetResponse? response = await client.Repos[owner][name].Contents["README.md"].GetAsync(cancellationToken: cancellationToken).NoSync();
+        WithPathItemRequestBuilder.WithPathGetResponse? response = await client.Repos[owner][name].Contents["README.md"].GetAsync(body: Stream.Null, cancellationToken: cancellationToken).NoSync();
 
         if (response?.ContentFile == null)
         {
