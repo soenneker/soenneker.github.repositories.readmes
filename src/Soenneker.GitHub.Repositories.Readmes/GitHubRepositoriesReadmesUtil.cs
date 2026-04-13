@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Soenneker.GitHub.OpenApiClient;
+using Soenneker.GitHub.OpenApiClient.Models;
 
 namespace Soenneker.GitHub.Repositories.Readmes;
 
@@ -31,7 +32,7 @@ public sealed class GitHubRepositoriesReadmesUtil : IGitHubRepositoriesReadmesUt
 
         GitHubOpenApiClient client = await _gitHubOpenApiClientUtil.Get(cancellationToken).NoSync();
 
-        var requestBody = new WithPathPutRequestBody
+        var requestBody = new ReposCreateOrUpdateFileContents
         {
             Message = commitMessage,
             Content = Convert.ToBase64String(Encoding.UTF8.GetBytes(content)),
@@ -48,14 +49,14 @@ public sealed class GitHubRepositoriesReadmesUtil : IGitHubRepositoriesReadmesUt
         GitHubOpenApiClient client = await _gitHubOpenApiClientUtil.Get(cancellationToken).NoSync();
 
         // Get the current file to get its SHA
-        WithPathItemRequestBuilder.WithPathGetResponse? response = await client.Repos[owner][name].Contents["README.md"].GetAsync(body: Stream.Null, cancellationToken: cancellationToken).NoSync();
+        ReposGetContent200? response = await client.Repos[owner][name].Contents["README.md"].GetAsync(body: new WithPathGetRequestBody(), cancellationToken: cancellationToken).NoSync();
 
         if (response?.ContentFile == null)
         {
             throw new Exception($"README.md not found in repository {owner}/{name}");
         }
 
-        var requestBody = new WithPathPutRequestBody
+        var requestBody = new ReposCreateOrUpdateFileContents
         {
             Message = commitMessage,
             Content = Convert.ToBase64String(Encoding.UTF8.GetBytes(content)),
