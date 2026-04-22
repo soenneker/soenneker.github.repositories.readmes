@@ -1,20 +1,19 @@
 using Soenneker.GitHub.Repositories.Readmes.Abstract;
-using Soenneker.Tests.FixturedUnit;
-using Xunit;
+using Soenneker.Tests.HostedUnit;
 
 namespace Soenneker.GitHub.Repositories.Readmes.Tests;
 
-[Collection("Collection")]
-public class GitHubRepositoriesReadmesUtilTests : FixturedUnitTest
+[ClassDataSource<Host>(Shared = SharedType.PerTestSession)]
+public class GitHubRepositoriesReadmesUtilTests : HostedUnitTest
 {
     private readonly IGitHubRepositoriesReadmesUtil _util;
 
-    public GitHubRepositoriesReadmesUtilTests(Fixture fixture, ITestOutputHelper output) : base(fixture, output)
+    public GitHubRepositoriesReadmesUtilTests(Host host) : base(host)
     {
         _util = Resolve<IGitHubRepositoriesReadmesUtil>(true);
     }
 
-    [Fact]
+    [Test]
     public void Default()
     {
 
