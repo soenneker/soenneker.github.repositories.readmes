@@ -32,7 +32,7 @@ public sealed class GitHubRepositoriesReadmesUtil : IGitHubRepositoriesReadmesUt
 
         GitHubOpenApiClient client = await _gitHubOpenApiClientUtil.Get(cancellationToken).NoSync();
 
-        var requestBody = new ReposCreateOrUpdateFileContents
+        var requestBody = new ReposCreateOrUpdateFileContentsRequest
         {
             Message = commitMessage,
             Content = Convert.ToBase64String(Encoding.UTF8.GetBytes(content)),
@@ -49,14 +49,14 @@ public sealed class GitHubRepositoriesReadmesUtil : IGitHubRepositoriesReadmesUt
         GitHubOpenApiClient client = await _gitHubOpenApiClientUtil.Get(cancellationToken).NoSync();
 
         // Get the current file to get its SHA
-        ReposGetContent200? response = await client.Repos[owner][name].Contents["README.md"].GetAsync(body: new WithPathGetRequestBody(), cancellationToken: cancellationToken).NoSync();
+        ReposGetContent200Response? response = await client.Repos[owner][name].Contents["README.md"].GetAsync(body: new WithPathGetRequestBody(), cancellationToken: cancellationToken).NoSync();
 
         if (response?.ContentFile == null)
         {
             throw new Exception($"README.md not found in repository {owner}/{name}");
         }
 
-        var requestBody = new ReposCreateOrUpdateFileContents
+        var requestBody = new ReposCreateOrUpdateFileContentsRequest
         {
             Message = commitMessage,
             Content = Convert.ToBase64String(Encoding.UTF8.GetBytes(content)),
