@@ -14,7 +14,6 @@ using Soenneker.GitHub.OpenApiClient.Models;
 
 namespace Soenneker.GitHub.Repositories.Readmes;
 
-///<inheritdoc cref="IGitHubRepositoriesReadmesUtil"/>
 public sealed class GitHubRepositoriesReadmesUtil : IGitHubRepositoriesReadmesUtil
 {
     private readonly ILogger<GitHubRepositoriesReadmesUtil> _logger;
@@ -49,12 +48,13 @@ public sealed class GitHubRepositoriesReadmesUtil : IGitHubRepositoriesReadmesUt
         GitHubOpenApiClient client = await _gitHubOpenApiClientUtil.Get(cancellationToken).NoSync();
 
         // Get the current file to get its SHA
-        ReposGetContent200Response? response = await client.Repos[owner][name].Contents["README.md"].GetAsync(body: new WithPathGetRequestBody(), cancellationToken: cancellationToken).NoSync();
+        ReposGetContent200Response? response = await client.Repos[owner][name].Contents["README.md"].GetAsync(
+            body: new WithPathGetRequestBody(),
+            requestConfiguration => requestConfiguration.QueryParameters.Ref = branch,
+            cancellationToken).NoSync();
 
         if (response?.ContentFile == null)
-        {
-            throw new Exception($"README.md not found in repository {owner}/{name}");
-        }
+            throw new FileNotFoundException($"README.md was not found in {owner}/{name} on branch {branch}");
 
         var requestBody = new ReposCreateOrUpdateFileContentsRequest
         {
@@ -75,7 +75,12 @@ public sealed class GitHubRepositoriesReadmesUtil : IGitHubRepositoriesReadmesUt
         {
             await Update(owner, name, commitMessage, content, branch, cancellationToken).NoSync();
         }
-        catch (Exception ex) when (ex.Message.Contains("not found"))
+        catch (BasicError ex) when (ex.ResponseStatusCode == 404)
+        {
+            _logger.LogInformation("Existing README.md was not found, creating new one...");
+            await Create(owner, name, commitMessage, content, branch, cancellationToken).NoSync();
+        }
+        catch (FileNotFoundException)
         {
             _logger.LogInformation("Existing README.md was not found, creating new one...");
             await Create(owner, name, commitMessage, content, branch, cancellationToken).NoSync();

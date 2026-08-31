@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <Description>A utility library for GitHub repository readme related operations</Description>
+        <Description>Creates and replaces README.md files on GitHub repository branches</Description>
         <Version Condition="'$(BUILD_VERSION)' == ''">4.0.0</Version>
         <Version Condition="'$(BUILD_VERSION)' != ''">$(BUILD_VERSION)</Version>
         <AssemblyName>Soenneker.GitHub.Repositories.Readmes</AssemblyName>

@@ -6,7 +6,7 @@ using Soenneker.GitHub.Repositories.Readmes.Abstract;
 namespace Soenneker.GitHub.Repositories.Readmes.Registrars;
 
 /// <summary>
-/// A utility library for GitHub repository readme related operations
+/// Registers services that create and replace GitHub repository README files.
 /// </summary>
 public static class GitHubRepositoriesReadmesUtilRegistrar
 {

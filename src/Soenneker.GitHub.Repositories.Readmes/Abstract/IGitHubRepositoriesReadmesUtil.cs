@@ -4,10 +4,7 @@ using System.Threading.Tasks;
 namespace Soenneker.GitHub.Repositories.Readmes.Abstract;
 
 /// <summary>
-/// A utility library for GitHub repository readme related operations
-/// </summary>
-/// <summary>
-/// Provides utilities for managing <c>README.md</c> files in GitHub repositories, including create, update, and upsert operations.
+/// Creates and replaces <c>README.md</c> files on specific GitHub repository branches.
 /// </summary>
 public interface IGitHubRepositoriesReadmesUtil
 {
