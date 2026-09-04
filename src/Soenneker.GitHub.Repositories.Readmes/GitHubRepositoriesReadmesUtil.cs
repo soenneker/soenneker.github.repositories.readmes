@@ -14,6 +14,7 @@ using Soenneker.GitHub.OpenApiClient.Models;
 
 namespace Soenneker.GitHub.Repositories.Readmes;
 
+/// <inheritdoc cref="IGitHubRepositoriesReadmesUtil" />
 public sealed class GitHubRepositoriesReadmesUtil : IGitHubRepositoriesReadmesUtil
 {
     private readonly ILogger<GitHubRepositoriesReadmesUtil> _logger;
