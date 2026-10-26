@@ -2,7 +2,8 @@ using Microsoft.Extensions.Logging;
 using Soenneker.Extensions.Task;
 using Soenneker.Extensions.ValueTask;
 using Soenneker.GitHub.ClientUtil.Abstract;
-using Soenneker.GitHub.OpenApiClient.Repos.Item.Item.Contents.Item;
+using Microsoft.Kiota.Abstractions.Serialization;
+using System.Collections.Generic;
 using Soenneker.GitHub.Repositories.Readmes.Abstract;
 using System;
 using System.IO;
@@ -50,7 +51,7 @@ public sealed class GitHubRepositoriesReadmesUtil : IGitHubRepositoriesReadmesUt
 
         // Get the current file to get its SHA
         ReposGetContent200Response? response = await client.Repos[owner][name].Contents["README.md"].GetAsync(
-            body: new WithPathGetRequestBody(),
+            new UntypedObject(new Dictionary<string, UntypedNode>()),
             requestConfiguration => requestConfiguration.QueryParameters.Ref = branch,
             cancellationToken).NoSync();
 
